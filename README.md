@@ -33,12 +33,12 @@ curl http://localhost:8080/ping
 
 ## Cloud Run へのデプロイ
 
-1. Artifact Registry リポジトリを作成（例: `gcloud artifacts repositories create analytics-mcp --repository-format=docker --location=asia-northeast1`）。
-2. Cloud Build を直接使う場合は `gcloud builds submit --tag asia-northeast1-docker.pkg.dev/PROJECT_ID/analytics-mcp/server .` で Artifact Registry へ push。
+1. Artifact Registry リポジトリを作成（例: `gcloud artifacts repositories create cloud-run-source-deploy --repository-format=docker --location=asia-northeast1`）。
+2. Cloud Build を直接使う場合は `gcloud builds submit --tag asia-northeast1-docker.pkg.dev/PROJECT_ID/cloud-run-source-deploy/ga4-mcp .` で Artifact Registry へ push。
 3. Cloud Run サービスへデプロイ:
    ```bash
    gcloud run deploy ga4-mcp \
-     --image asia-northeast1-docker.pkg.dev/PROJECT_ID/analytics-mcp/server \
+     --image asia-northeast1-docker.pkg.dev/PROJECT_ID/cloud-run-source-deploy/ga4-mcp \
      --region asia-northeast1 \
      --allow-unauthenticated \
      --port 8080
@@ -54,7 +54,7 @@ curl http://localhost:8080/ping
 | 変数 | 既定値 | 説明 |
 | --- | --- | --- |
 | `_REGION` | `asia-northeast1` | Artifact Registry と Cloud Run のリージョン |
-| `_REPOSITORY` | `analytics-mcp` | Artifact Registry のリポジトリ名 |
+| `_REPOSITORY` | `cloud-run-source-deploy` | Artifact Registry のリポジトリ名 |
 | `_SERVICE` | `ga4-mcp` | Cloud Run サービス名 |
 | `_DEPLOY_ARGS` | `--allow-unauthenticated` | `gcloud run deploy` に付与する追加引数 |
 
@@ -68,7 +68,7 @@ Cloud Run の HTTPS エンドポイントが `https://ga4-mcp-xxxxxx.a.run.app/m
 ```json
 {
   "mcpServers": {
-    "analytics-mcp-cloud-run": {
+    "cloud-run-source-deploy": {
       "url": "https://ga4-mcp-xxxxxx.a.run.app/mcp",
       "apiKey": "OPTIONAL_KEY"
     }
