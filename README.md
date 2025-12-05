@@ -34,10 +34,7 @@ curl http://localhost:8080/ping
 ## Cloud Run へのデプロイ
 
 1. Artifact Registry リポジトリを作成（例: `gcloud artifacts repositories create analytics-mcp --repository-format=docker --location=asia-northeast1`）。
-2. イメージをビルドして登録:
-   ```bash
-   gcloud builds submit --tag asia-northeast1-docker.pkg.dev/PROJECT_ID/analytics-mcp/server .
-   ```
+2. Cloud Build を直接使う場合は `gcloud builds submit --tag asia-northeast1-docker.pkg.dev/PROJECT_ID/analytics-mcp/server .` で Artifact Registry へ push。
 3. Cloud Run サービスへデプロイ:
    ```bash
    gcloud run deploy ga4-mcp \
@@ -48,6 +45,21 @@ curl http://localhost:8080/ping
    ```
    - サービス アカウントを限定したい場合は `--service-account` を指定し、GA4 読み取り権限と必要な Cloud Run/Artifact Registry 権限を付与してください。
    - `MCP_API_KEY` を設定すると HTTP リクエストに `Authorization: Bearer <key>` を必須にできます。
+
+## Cloud Build (cloudbuild.yaml)
+
+- トリガーから `cloudbuild.yaml` を参照すると、イメージビルド → Artifact Registry への push → Cloud Run デプロイを一連で実行します。
+- 主要な置換変数:
+
+| 変数 | 既定値 | 説明 |
+| --- | --- | --- |
+| `_REGION` | `asia-northeast1` | Artifact Registry と Cloud Run のリージョン |
+| `_REPOSITORY` | `analytics-mcp` | Artifact Registry のリポジトリ名 |
+| `_SERVICE` | `ga4-mcp` | Cloud Run サービス名 |
+| `_DEPLOY_ARGS` | `--allow-unauthenticated` | `gcloud run deploy` に付与する追加引数 |
+
+- Cloud Build トリガーで `build.service_account` を指定している場合でも、`cloudbuild.yaml` 内で `options.logging=CLOUD_LOGGING_ONLY` を設定済みなので追加のログバケットは不要です。
+- デプロイ時に `MCP_API_KEY` や `GOOGLE_CLOUD_PROJECT` 等の環境変数を設定する場合は、Cloud Run のサービス設定で管理してください（`_DEPLOY_ARGS` に `--set-env-vars ...` を追加する方法もあります）。
 
 ## クライアント接続例 (Gemini)
 
