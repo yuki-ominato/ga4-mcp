@@ -3,7 +3,7 @@ options:
 
 substitutions:
   _REGION: asia-northeast1
-  _REPOSITORY: analytics-mcp
+  _REPOSITORY: cloud-run-source-deploy
   _SERVICE: ga4-mcp
   _DEPLOY_ARGS: "--allow-unauthenticated"
 
